@@ -16,3 +16,6 @@
 # include git important files
 !.gitmodules
 !.gitignore
+
+# include build system files
+!circle.yml

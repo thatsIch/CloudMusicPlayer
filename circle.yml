@@ -1,0 +1,11 @@
+#adjusting the VM to your preferences and requirements
+machine:
+  java:
+    version: oraclejdk8
+  timezone: Europe/Berlin
+
+# setting up your project's language-specific dependencies
+dependencies:
+  pre:
+    # print CPU architecture
+    - lscpu
