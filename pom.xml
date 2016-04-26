@@ -99,6 +99,7 @@
 							<goal>launch4j</goal>
 						</goals>
 						<configuration>
+							<skip>true</skip>
 							<headerType>console</headerType>
 							<outfile>target/encc.exe</outfile>
 							<jar>target/encc-1.0.jar</jar>
