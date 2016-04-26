@@ -134,6 +134,7 @@
 					</execution>
 				</executions>
 			</plugin>
+						-->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -144,14 +145,16 @@
 							<goal>attached</goal>
 						</goals>
 						<configuration>
-							<descriptors>
-								<descriptor>assembly.xml</descriptor>
-							</descriptors>
+							<archive>
+								<manifest>
+									<mainClass>de.thatsich.soundcloud.player.JavaFXTrayIcon</mainClass>
+								</manifest>
+							</archive>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			-->
+
 		</plugins>
 	</build>
 </project>

@@ -48,7 +48,7 @@ import javafx.stage.StageStyle;
  * @version 1.0.0-SNAPSHOT
  * @since 1.0.0-SNAPSHOT 25.04.2016
  */
-public class JavaFXTrayIconSample extends Application
+public class JavaFXTrayIcon extends Application
 {
 	private static final int MINIMAL_ICON_SIZE = 16;
 
