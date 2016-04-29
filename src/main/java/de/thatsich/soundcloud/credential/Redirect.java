@@ -1,4 +1,4 @@
-package de.thatsich.soundcloud.api;
+package de.thatsich.soundcloud.credential;
 
 
 /**
@@ -10,9 +10,9 @@ package de.thatsich.soundcloud.api;
  *
  * @author thatsIch (thatsich[at]mail[dot]de)
  * @version 1.0.0-SNAPSHOT
- * @since 1.0.0-SNAPSHOT 25.04.2016
+ * @since 1.0.0-SNAPSHOT 26.04.2016
  */
-public interface Endpoint
+public interface Redirect
 {
-	String getEndPointPath();
+	String URL = "http://example.com/callback";
 }

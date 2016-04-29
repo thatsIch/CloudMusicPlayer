@@ -10,6 +10,7 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -23,6 +24,8 @@ import java.util.TimerTask;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
+
+import com.soundcloud.api.ApiWrapper;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -51,6 +54,8 @@ import javafx.stage.StageStyle;
 public class JavaFXTrayIcon extends Application
 {
 	private static final int MINIMAL_ICON_SIZE = 16;
+	private static final String CLIENT_ID = "40e72230d55c34f894bdd2051af6032f";
+	private static final String CLIENT_SECRET = "653e9b8d3a2e78188231e8e0b3351497";
 
 	// application stage is stored so that it can be shown and hidden based on system tray icon operations.
 	private Stage stage;
@@ -61,12 +66,16 @@ public class JavaFXTrayIcon extends Application
 	// format used to display the current time in a tray icon notification.
 	private final DateFormat timeFormat = SimpleDateFormat.getTimeInstance();
 
+	public static final File WRAPPER_SER = new File("wrapper.ser");
+
 	// sets up the javafx application.
 	// a tray icon is setup for the icon, but the main stage remains invisible until the user
 	// interacts with the tray icon.
 	@Override
 	public void start( final Stage stage )
 	{
+		ApiWrapper wrapper;
+
 		// stores a reference to the stage.
 		this.stage = stage;
 

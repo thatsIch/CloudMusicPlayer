@@ -1,9 +1,8 @@
 package de.thatsich.soundcloud.player;
 
 
+import java.util.Arrays;
 import java.util.List;
-
-import jersey.repackaged.com.google.common.collect.Lists;
 
 
 /**
@@ -23,7 +22,7 @@ class IconSizeProvider
 
 	IconSizeProvider()
 	{
-		this.sizes = Lists.newArrayList( 64, 56, 48, 40, 32, 24, 16 );
+		this.sizes = Arrays.asList( 64, 56, 48, 40, 32, 24, 16 );
 	}
 
 	List<Integer> getSizes()
