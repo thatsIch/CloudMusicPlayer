@@ -34,7 +34,7 @@ public class TokenFetcher
 {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private ApiWrapper fetchToken() throws URISyntaxException, UnsupportedEncodingException, AuthorizationException
+	public ApiWrapper fetchToken() throws URISyntaxException, UnsupportedEncodingException, AuthorizationException
 	{
 		final URI redirectUri = new URI( Redirect.URL );
 		LOGGER.info( "Will be redirecting to '" + redirectUri + "'. This is only to use the API properly. If the redirect URLs are not matching the OAuth2.0 will be canceled." );
@@ -44,18 +44,18 @@ public class TokenFetcher
 		final UserAgent userAgent = new UserAgentImpl();
 
 		final AuthorizationResponse authorizationResponse = userAgent.requestAuthorizationCode( authorizationEndpoint, redirectUri );
-		final String code = authorizationResponse.getCode();
-		LOGGER.info( "Retrieved authorization code from login: '" + code + "'" );
+		final String connectionCode = authorizationResponse.getCode();
+		LOGGER.info( "Retrieved connection connectionCode from login: '" + connectionCode + "'" );
 
-		final Token token = new Token( code, "", "non-expiring" );
-		final ApiWrapper tokenAPI = new ApiWrapper( Client.ID, Client.SECRET, redirectUri, token );
+		final Token token = new Token( connectionCode, "", "non-expiring" );
+		final ApiWrapper tokenAPI = new ApiWrapper( Client.ID, Client.SECRET, null, token );
 
 		return tokenAPI;
 	}
 
 	public ApiWrapper fetchOrCreateToken() throws AuthorizationException, IOException, URISyntaxException, ClassNotFoundException
 	{
-		final File tokenFile = new File( CredentialPath.TOKEN_PATH );
+		final File tokenFile = new File( CredentialPath.CONNECTION_TOKEN_PATH );
 		if( tokenFile.exists() && tokenFile.isFile() )
 		{
 			LOGGER.info( "Found token file at '" + tokenFile + "'" );
