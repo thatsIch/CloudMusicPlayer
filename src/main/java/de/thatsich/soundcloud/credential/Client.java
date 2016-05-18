@@ -1,4 +1,4 @@
-package de.thatsich.soundcloud.player;
+package de.thatsich.soundcloud.credential;
 
 
 /**
