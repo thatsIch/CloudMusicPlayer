@@ -18,5 +18,5 @@ import de.thatsich.soundcloud.ApplicationPath;
 public interface CredentialPath
 {
 	String CONNECTION_TOKEN_PATH = ApplicationPath.PATH + "\\connect.token";
-	String AUTH_TOKEN_PATH = ApplicationPath.PATH + "\\auth.token";
+	String ACCESS_TOKEN_PATH = ApplicationPath.PATH + "\\auth.token";
 }

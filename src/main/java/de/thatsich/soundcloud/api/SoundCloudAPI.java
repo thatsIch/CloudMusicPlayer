@@ -24,5 +24,6 @@ public class SoundCloudAPI extends SoundCloud
 		super( clientID, clientSecret );
 
 		this.wrapper = wrapper;
+		this.token = wrapper.getToken();
 	}
 }

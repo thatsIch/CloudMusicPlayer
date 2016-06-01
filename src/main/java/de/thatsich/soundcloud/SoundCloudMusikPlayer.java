@@ -7,15 +7,13 @@ import java.net.URISyntaxException;
 
 import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 import com.soundcloud.api.ApiWrapper;
-import com.soundcloud.api.Request;
 
-import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.thatsich.soundcloud.api.SoundCloudAPI;
 import de.thatsich.soundcloud.credential.Client;
-import de.thatsich.soundcloud.credential.TokenFetcher;
+import de.thatsich.soundcloud.credential.ConnectionManager;
 import de.voidplus.soundcloud.SoundCloud;
 import de.voidplus.soundcloud.User;
 
@@ -40,15 +38,17 @@ public class SoundCloudMusikPlayer
 		final InetAddress address = InetAddress.getByName( "soundcloud.com" );
 		if( address.isReachable( 1000 ) )
 		{
-			final TokenFetcher tokenFetcher = new TokenFetcher();
-			final ApiWrapper apiWrapper = tokenFetcher.fetchOrCreateToken();
-			final HttpResponse response = apiWrapper.get( Request.to( "/me" ) );
-			System.out.println( "response.getStatusLine() = " + response.getStatusLine() );
-			
+			final ConnectionManager connectionManager = new ConnectionManager();
+			final ApiWrapper apiWrapper = connectionManager.fetchOrRecreateAccessToken();
+
+			//			final TokenFetcher tokenFetcher = new TokenFetcher();
+//			final ApiWrapper apiWrapper = tokenFetcher.fetchOrCreateToken();
+//			final HttpResponse response = apiWrapper.get( Request.to( "/me" ) );
+//			System.out.println( "response.getStatusLine() = " + response.getStatusLine() );
+//
 			final SoundCloud soundCloud = new SoundCloudAPI( Client.ID, Client.SECRET, apiWrapper );
-//			final boolean login = soundCloud.login( "minh.do@mail.de", "Schn1ps3l" );
-//			System.out.println( "login = " + login );
-			
+//
+
 			final User me = soundCloud.getMe();
 			System.out.println( "me = " + me );
 		}

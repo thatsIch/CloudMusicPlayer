@@ -18,6 +18,8 @@ import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 import com.microsoft.alm.oauth2.useragent.AuthorizationResponse;
 import com.microsoft.alm.oauth2.useragent.UserAgent;
 import com.microsoft.alm.oauth2.useragent.UserAgentImpl;
+import com.soundcloud.api.ApiWrapper;
+import com.soundcloud.api.Token;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +40,7 @@ public class ConnectionManager
 {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public String fetchConnectionToken() throws URISyntaxException, UnsupportedEncodingException, AuthorizationException
+	private String fetchConnectionToken() throws URISyntaxException, UnsupportedEncodingException, AuthorizationException
 	{
 		final URI redirectUri = new URI( Redirect.URL );
 		LOGGER.info( "Will be redirecting to '" + redirectUri + "'. This is only to use the API properly. If the redirect URLs are not matching the OAuth2.0 will be canceled." );
@@ -54,7 +56,39 @@ public class ConnectionManager
 		return connectionCode;
 	}
 
-	public String fetchOrRecreateConnectionToken() throws IOException, ClassNotFoundException, URISyntaxException, AuthorizationException
+	private ApiWrapper fetchAccessToken() throws URISyntaxException, IOException, AuthorizationException, ClassNotFoundException
+	{
+		final URI redirectUri = new URI( Redirect.URL );
+		LOGGER.info( "Will be redirecting to '" + redirectUri + "'. This is only to use the API properly. If the redirect URLs are not matching the OAuth2.0 will be canceled." );
+
+		final String connectionToken = this.fetchOrRecreateConnectionToken();
+		final ApiWrapper api = new ApiWrapper( Client.ID, Client.SECRET, redirectUri, null );
+		final Token token = api.authorizationCode( connectionToken );
+
+		final String access = token.access;
+		System.out.println( "access = " + access );
+
+		return api;
+	}
+
+	public ApiWrapper fetchOrRecreateAccessToken() throws IOException, ClassNotFoundException, URISyntaxException, AuthorizationException
+	{
+		final File accessTokenFile = new File( CredentialPath.ACCESS_TOKEN_PATH );
+		if( accessTokenFile.exists() && accessTokenFile.isFile() )
+		{
+			LOGGER.info( "Found access token file at '" + accessTokenFile + "'" );
+
+			return ApiWrapper.fromFile( accessTokenFile );
+		}
+		else {
+			final ApiWrapper apiWrapper = this.fetchAccessToken();
+			apiWrapper.toFile( accessTokenFile );
+
+			return apiWrapper;
+		}
+	}
+
+	private String fetchOrRecreateConnectionToken() throws IOException, ClassNotFoundException, URISyntaxException, AuthorizationException
 	{
 		final File connectionTokenFile = new File( CredentialPath.CONNECTION_TOKEN_PATH );
 		if( connectionTokenFile.exists() && connectionTokenFile.isFile() )
@@ -69,6 +103,8 @@ public class ConnectionManager
 			{
 				final Object object = input.readObject();
 				final String casted = (String) object;
+
+				LOGGER.info( "Read token file with content: '" + casted + "'" );
 
 				return casted;
 			}
