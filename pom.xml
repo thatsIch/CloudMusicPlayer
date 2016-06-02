@@ -8,6 +8,12 @@
 	<artifactId>sound-processing</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
+	<properties>
+		<!-- javac build variables -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
 	<repositories>
 		<repository>
 			<id>git-thatsIch</id>
@@ -72,22 +78,6 @@
 			<artifactId>log4j-core</artifactId>
 		</dependency>
 
-		<!--
-			izPack
-			pakcage once, deploy everywhere.
-
-			IzPack is a widely used tool for packaging applications on the Java™ platform.
-
-			Easily make installers that work seamlessly on Microsoft Windows™,
-			Linux™, Solaris™ and Mac OS X™. Keep your users happy just right
-			before they get their hands on your software for the first time.
-		-->
-		<dependency>
-			<groupId>org.codehaus.izpack</groupId>
-			<artifactId>izpack-maven-plugin</artifactId>
-			<version>5.0.8</version>
-		</dependency>
-
 		<!-- test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -104,7 +94,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>2.0.52-beta</version>
+			<version>2.0.54-beta</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -162,4 +152,127 @@
 
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>izpack-packaging</id>
+
+			<properties>
+				<!-- izPack variables -->
+				<izpack.version>5.0.8</izpack.version>
+				<izpack.staging>${project.build.directory}/staging</izpack.staging>
+				<info.appName>My Killer Application</info.appName>
+				<info.appsubpath>my-killer-app/standard</info.appsubpath>
+				<izpack.dir.app>${basedir}/src/main/izpack</izpack.dir.app>
+				<staging.dir.app>${izpack.staging}/appfiles</staging.dir.app>
+			</properties>
+
+			<build>
+				<plugins>
+					<!-- copy izpack resources into izpack staging area, expected by izpack.xml -->
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>create-staging-area</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<copy todir="${izpack.staging}">
+											<fileset
+												dir="${basedir}/src/izpack"/>
+										</copy>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<configuration>
+							<excludeTransitive>false</excludeTransitive>
+							<stripVersion>true</stripVersion>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<excludeScope>system</excludeScope>
+						</configuration>
+						<executions>
+							<execution>
+								<!-- copy product jars to izpack staging lib -->
+								<id>copy-product-dependencies</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${izpack.staging}/lib
+									</outputDirectory>
+									<excludeScope>system</excludeScope>
+									<!-- this excludes tools.jar, e.g. -->
+									<excludeArtifactIds>mycustompanels
+									</excludeArtifactIds>
+									<excludeGroupIds>org.codehaus.izpack
+									</excludeGroupIds>
+								</configuration>
+							</execution>
+							<execution>
+								<!-- copy izpack custom (custom panels, etc.) jars to izpack staging custom -->
+								<id>copy-izpack-dependencies</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${izpack.staging}/custom
+									</outputDirectory>
+									<includeArtifactIds>mycustompanels
+									</includeArtifactIds>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!--
+						izPack
+						pakcage once, deploy everywhere.
+
+						IzPack is a widely used tool for packaging applications on the Java™ platform.
+
+						Easily make installers that work seamlessly on Microsoft Windows™,
+						Linux™, Solaris™ and Mac OS X™. Keep your users happy just right
+						before they get their hands on your software for the first time.
+					-->
+					<plugin>
+						<groupId>org.codehaus.izpack</groupId>
+						<artifactId>izpack-maven-plugin</artifactId>
+						<version>5.0.8</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>izpack</goal>
+								</goals>
+								<configuration>
+									<!-- base for relative paths in izpack descriptor -->
+									<baseDir>${staging.dir.app}</baseDir>
+									<installFile>${izpack.dir.app}/install.xml</installFile>
+									<outputDirectory>${project.build.directory}
+									</outputDirectory>
+									<finalName>${project.build.finalName}</finalName>
+									<enableOverrideArtifact>true</enableOverrideArtifact>
+									<mkdirs>true</mkdirs>
+									<autoIncludeUrl>false</autoIncludeUrl>
+									<autoIncludeDevelopers>false</autoIncludeDevelopers>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
