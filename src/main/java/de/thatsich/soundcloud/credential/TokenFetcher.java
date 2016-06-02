@@ -1,8 +1,14 @@
 package de.thatsich.soundcloud.credential;
 
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,11 +36,28 @@ import org.apache.logging.log4j.Logger;
  * @version 1.0.0-SNAPSHOT
  * @since 1.0.0-SNAPSHOT 18.05.2016
  */
-public class TokenFetcher
+class TokenFetcher
 {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public ApiWrapper fetchToken() throws URISyntaxException, UnsupportedEncodingException, AuthorizationException
+	ApiWrapper fetchOrRecreateAccessToken() throws IOException, ClassNotFoundException, URISyntaxException, AuthorizationException
+	{
+		final File accessTokenFile = new File( CredentialPath.ACCESS_TOKEN_PATH );
+		if( accessTokenFile.exists() && accessTokenFile.isFile() )
+		{
+			LOGGER.info( "Found access token file at '" + accessTokenFile + "'" );
+
+			return ApiWrapper.fromFile( accessTokenFile );
+		}
+		else {
+			final ApiWrapper apiWrapper = this.fetchAccessToken();
+			apiWrapper.toFile( accessTokenFile );
+
+			return apiWrapper;
+		}
+	}
+
+	private String fetchConnectionToken() throws URISyntaxException, UnsupportedEncodingException, AuthorizationException
 	{
 		final URI redirectUri = new URI( Redirect.URL );
 		LOGGER.info( "Will be redirecting to '" + redirectUri + "'. This is only to use the API properly. If the redirect URLs are not matching the OAuth2.0 will be canceled." );
@@ -47,36 +70,69 @@ public class TokenFetcher
 		final String connectionCode = authorizationResponse.getCode();
 		LOGGER.info( "Retrieved connection connectionCode from login: '" + connectionCode + "'" );
 
-		final Token token = new Token( connectionCode, "", "non-expiring" );
-		final ApiWrapper tokenAPI = new ApiWrapper( Client.ID, Client.SECRET, null, token );
-
-		return tokenAPI;
+		return connectionCode;
 	}
 
-	public ApiWrapper fetchOrCreateToken() throws AuthorizationException, IOException, URISyntaxException, ClassNotFoundException
+	private ApiWrapper fetchAccessToken() throws URISyntaxException, IOException, AuthorizationException, ClassNotFoundException
 	{
-		final File tokenFile = new File( CredentialPath.CONNECTION_TOKEN_PATH );
-		if( tokenFile.exists() && tokenFile.isFile() )
+		final URI redirectUri = new URI( Redirect.URL );
+		LOGGER.info( "Will be redirecting to '" + redirectUri + "'. This is only to use the API properly. If the redirect URLs are not matching the OAuth2.0 will be canceled." );
+
+		final String connectionToken = this.fetchOrRecreateConnectionToken();
+		final ApiWrapper api = new ApiWrapper( Client.ID, Client.SECRET, redirectUri, null );
+		final Token token = api.authorizationCode( connectionToken );
+
+		final String access = token.access;
+		System.out.println( "access = " + access );
+
+		return api;
+	}
+
+	private String fetchOrRecreateConnectionToken() throws IOException, ClassNotFoundException, URISyntaxException, AuthorizationException
+	{
+		final File connectionTokenFile = new File( CredentialPath.CONNECTION_TOKEN_PATH );
+		if( connectionTokenFile.exists() && connectionTokenFile.isFile() )
 		{
-			LOGGER.info( "Found token file at '" + tokenFile + "'" );
+			LOGGER.info( "Found connection token file at '" + connectionTokenFile + "'" );
 
-			final ApiWrapper apiWrapper = ApiWrapper.fromFile( tokenFile );
+			try(
+				final FileInputStream file = new FileInputStream( CredentialPath.CONNECTION_TOKEN_PATH );
+				final BufferedInputStream buffer = new BufferedInputStream( file );
+				final ObjectInputStream input = new ObjectInputStream( buffer )
+			)
+			{
+				final Object object = input.readObject();
+				final String casted = (String) object;
 
-			return apiWrapper;
+				LOGGER.info( "Read token file with content: '" + casted + "'" );
+
+				return casted;
+			}
 		}
 		else
 		{
-			LOGGER.info( "No token file at '" + tokenFile + "'; creating new one via OAuth2.0" );
+			LOGGER.info( "No connection token file at '" + connectionTokenFile + "'; creating new one via OAuth2.0" );
 
-			final ApiWrapper token = this.fetchToken();
-			final boolean success = tokenFile.getParentFile().mkdirs();
-			if (success) {
-				LOGGER.info( "Created directories required for token file: '" + tokenFile );
+			final String connectionToken = this.fetchConnectionToken();
+			final boolean success = connectionTokenFile
+				.getParentFile()
+				.mkdirs();
+
+			if( success )
+			{
+				LOGGER.info( "Created directories required for token file: '" + connectionTokenFile );
 			}
 
-			token.toFile( tokenFile );
+			try(
+				final FileOutputStream file = new FileOutputStream( CredentialPath.CONNECTION_TOKEN_PATH );
+				final BufferedOutputStream buffer = new BufferedOutputStream( file );
+				final ObjectOutputStream output = new ObjectOutputStream( buffer )
+			)
+			{
+				output.writeObject( connectionToken );
+			}
 
-			return token;
+			return connectionToken;
 		}
 	}
 }

@@ -46,7 +46,7 @@ public class SoundCloudMusicPlayer
 		if( address.isReachable( 1000 ) )
 		{
 			final ConnectionManager connectionManager = new ConnectionManager();
-			final ApiWrapper apiWrapper = connectionManager.fetchOrRecreateAccessToken();
+			final ApiWrapper apiWrapper = connectionManager.connectToSoundCloudAPI();
 
 			final SoundCloud soundCloud = new SoundCloudAPI( Client.ID, Client.SECRET, apiWrapper );
 			//
