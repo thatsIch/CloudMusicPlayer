@@ -124,7 +124,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<mainClass>
-								de.thatsich.soundcloud.player.JavaFXTrayIcon
+								de.thatsich.cmp.player.JavaFXTrayIcon
 							</mainClass>
 						</manifest>
 					</archive>
