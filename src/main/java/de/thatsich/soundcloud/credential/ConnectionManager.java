@@ -7,8 +7,7 @@ import java.net.URISyntaxException;
 import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 import com.soundcloud.api.ApiWrapper;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import de.thatsich.soundcloud.credential.token.access.AccessTokenManager;
 
 
 /**
@@ -24,12 +23,10 @@ import org.apache.logging.log4j.Logger;
  */
 public class ConnectionManager
 {
-	private static final Logger LOGGER = LogManager.getLogger();
-
 	public ApiWrapper connectToSoundCloudAPI() throws ClassNotFoundException, URISyntaxException, AuthorizationException, IOException
 	{
-		final TokenFetcher fetcher = new TokenFetcher();
-		final ApiWrapper api = fetcher.fetchOrRecreateAccessToken();
+		final AccessTokenManager manager = new AccessTokenManager();
+		final ApiWrapper api = manager.fetchOrRecreateAccessToken();
 
 		return api;
 	}

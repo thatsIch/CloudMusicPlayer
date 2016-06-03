@@ -84,5 +84,8 @@ public class SoundCloudMusicPlayer
 			}
 			//			}
 		}
+		else {
+			LOGGER.warn( "No internet connection to soundcloud.com was found" );
+		}
 	}
 }

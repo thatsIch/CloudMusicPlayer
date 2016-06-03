@@ -1,4 +1,7 @@
-package de.thatsich.soundcloud.credential;
+package de.thatsich.soundcloud.credential.token.access;
+
+
+import com.soundcloud.api.ApiWrapper;
 
 
 /**
@@ -14,4 +17,12 @@ package de.thatsich.soundcloud.credential;
  */
 public class AccessTokenRepository
 {
+	void storeAccessToken(ApiWrapper api) {
+
+	}
+
+
+	ApiWrapper fetchAccessToken() {
+		return null;
+	}
 }

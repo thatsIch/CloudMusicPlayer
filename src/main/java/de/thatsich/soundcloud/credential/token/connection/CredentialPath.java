@@ -1,4 +1,4 @@
-package de.thatsich.soundcloud.credential;
+package de.thatsich.soundcloud.credential.token.connection;
 
 
 import de.thatsich.soundcloud.ApplicationPath;
@@ -13,10 +13,9 @@ import de.thatsich.soundcloud.ApplicationPath;
  *
  * @author thatsIch (thatsich[at]mail[dot]de)
  * @version 1.0.0-SNAPSHOT
- * @since 1.0.0-SNAPSHOT 17.05.2016
+ * @since 1.0.0-SNAPSHOT 02.06.2016
  */
 interface CredentialPath
 {
 	String CONNECTION_TOKEN_PATH = ApplicationPath.PATH + "\\connect.token";
-	String ACCESS_TOKEN_PATH = ApplicationPath.PATH + "\\auth.token";
 }
