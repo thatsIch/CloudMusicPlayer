@@ -3,7 +3,6 @@ package de.thatsich.soundcloud;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -15,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.thatsich.soundcloud.api.SoundCloudAPI;
+import de.thatsich.soundcloud.connection.SoundCloudConnectionTester;
 import de.thatsich.soundcloud.credential.Client;
 import de.thatsich.soundcloud.credential.ConnectionManager;
 import de.voidplus.soundcloud.Playlist;
@@ -42,8 +42,8 @@ public class SoundCloudMusicPlayer
 
 	public static void main( final String... args ) throws URISyntaxException, ClassNotFoundException, AuthorizationException, IOException
 	{
-		final InetAddress address = InetAddress.getByName( "soundcloud.com" );
-		if( address.isReachable( 1000 ) || true )
+		final SoundCloudConnectionTester connectionTester = new SoundCloudConnectionTester();
+		if( connectionTester.isReachableWithTimeout( "https://soundcloud.com", 1000 ) )
 		{
 			final ConnectionManager connectionManager = new ConnectionManager();
 			final ApiWrapper apiWrapper = connectionManager.connectToSoundCloudAPI();
@@ -84,7 +84,8 @@ public class SoundCloudMusicPlayer
 			}
 			//			}
 		}
-		else {
+		else
+		{
 			LOGGER.warn( "No internet connection to soundcloud.com was found" );
 		}
 	}
