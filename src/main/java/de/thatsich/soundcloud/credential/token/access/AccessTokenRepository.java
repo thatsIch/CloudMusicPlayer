@@ -15,7 +15,7 @@ import com.soundcloud.api.ApiWrapper;
  * @version 1.0.0-SNAPSHOT
  * @since 1.0.0-SNAPSHOT 02.06.2016
  */
-public class AccessTokenRepository
+class AccessTokenRepository
 {
 	void storeAccessToken(ApiWrapper api) {
 

@@ -28,11 +28,11 @@ import de.thatsich.soundcloud.credential.token.connection.ConnectionTokenManager
  * @version 1.0.0-SNAPSHOT
  * @since 1.0.0-SNAPSHOT 02.06.2016
  */
-public class AccessTokenFetcher
+class AccessTokenFetcher
 {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public ApiWrapper fetchAccessToken() throws URISyntaxException, IOException, AuthorizationException, ClassNotFoundException
+	ApiWrapper fetchAccessToken() throws URISyntaxException, IOException, AuthorizationException, ClassNotFoundException
 	{
 		final URI redirectUri = new URI( Redirect.URL );
 		LOGGER.info( "Using redirect URI '" + redirectUri + "' for access token. This is only to use the API properly. If the redirect URLs are not matching the OAuth2.0 will be canceled." );
@@ -43,7 +43,7 @@ public class AccessTokenFetcher
 		final Token token = api.authorizationCode( connectionToken );
 
 		final String access = token.access;
-		System.out.println( "access = " + access );
+		LOGGER.info( "Fetched access token '"+access+"' for connection token '" + connectionToken + "'" );
 
 		return api;
 	}

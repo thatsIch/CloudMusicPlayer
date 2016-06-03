@@ -43,7 +43,7 @@ public class SoundCloudMusicPlayer
 	public static void main( final String... args ) throws URISyntaxException, ClassNotFoundException, AuthorizationException, IOException
 	{
 		final InetAddress address = InetAddress.getByName( "soundcloud.com" );
-		if( address.isReachable( 1000 ) )
+		if( address.isReachable( 1000 ) || true )
 		{
 			final ConnectionManager connectionManager = new ConnectionManager();
 			final ApiWrapper apiWrapper = connectionManager.connectToSoundCloudAPI();
