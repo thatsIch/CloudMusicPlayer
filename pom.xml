@@ -35,6 +35,11 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<!--
+			Inofficial soundcloud java API wrapper
+
+			grants easier access to their REST API
+		-->
 		<dependency>
 			<groupId>nok</groupId>
 			<artifactId>soundcloud-java-library</artifactId>
